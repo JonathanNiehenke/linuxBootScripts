@@ -1,0 +1,43 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:          BT_Keyboard
+# Required-Start:    $bluetooth
+# Required-Stop:     $bluetooth
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Connect to bluetooth keyboard
+# Description:       Using bluetoothctl connect or disconnet to the
+#                    specified Bluetooth keyboard
+### END INIT INFO
+
+# Assumes the bluetooth keyboard has already been paired and trusted
+#`systemctl enable /etc/init.d/BT_Keyboard` with privilege for autostart
+
+
+# TZUMI Bluetooth keyboard
+MAC=00:00:00:00:27:40
+
+case "$1" in
+start)
+	echo "power on\nconnect $MAC\nquit" | /usr/bin/bluetoothctl
+	;;
+stop)
+	echo "disconnect $MAC\nquit" | /usr/bin/bluetoothctl
+	echo 'disconnect \nexit' | /usr/bin/bluetoothctl
+	;;
+restart)
+	echo "disconnect $MAC\nquit" | /usr/bin/bluetoothctl
+	sleep 3
+	echo "connect $MAC\nquit" | /usr/bin/bluetoothctl
+	;;
+status)
+	echo "info $MAC\nexit" | /usr/bin/bluetoothctl | /bin/grep "Name\|Connected"
+	;;
+*)
+	echo 'Usage: /etc/init.d/BT_Keyboard {start|stop|restart|status}'
+	exit 1
+	;;
+esac
+
+exit 0
